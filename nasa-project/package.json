@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "morgan": "^1.10.0",
     "server": "^1.0.37"
   }
 }
