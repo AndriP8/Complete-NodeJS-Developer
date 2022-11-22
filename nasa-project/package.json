@@ -10,13 +10,15 @@
     "server": "npm run watch --prefix server",
     "client": "npm run start --prefix client",
     "watch": "npm run server & npm run client",
-    "deploy": "npm run build --prefix client && npm run start --prefix server"
+    "deploy": "npm run build --prefix client && npm run start --prefix server",
+    "deploy-cluster": "npm run build --prefix client && npm run cluster --prefix server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "morgan": "^1.10.0",
+    "pm2": "^5.2.2",
     "server": "^1.0.37"
   }
 }
