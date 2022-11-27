@@ -26,8 +26,12 @@ const existLaunchWithId = (launchId) => {
   return launches.has(launchId);
 };
 
-const getAllLaunches = async () => {
-  return await launchesDatabase.find({}, { "_id:": 0, __v: 0 });
+const getAllLaunches = async (skip, limit) => {
+  return await launchesDatabase
+    .find({}, { "_id:": 0, __v: 0 })
+    .sort({ flightNumber: 1 })
+    .skip(skip)
+    .limit(limit);
 };
 
 const getLatestFlightNumber = async () => {
@@ -57,8 +61,6 @@ const saveLaunch = async (launch) => {
     { upsert: true }
   );
 };
-
-saveLaunch(launch);
 
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
 
@@ -93,7 +95,7 @@ const populateLaunches = async () => {
   const launchDocs = response.data.docs;
   for (const launchDoc of launchDocs) {
     const payloads = launchDoc["payloads"];
-    const customers = payloads.flatMap((payload) => {
+    const customer = payloads.flatMap((payload) => {
       return payload["customers"];
     });
 
@@ -104,7 +106,7 @@ const populateLaunches = async () => {
       launchDate: launchDoc["date_local"],
       upcoming: launchDoc["upcoming"],
       success: launchDoc["success"],
-      customers
+      customer
     };
 
     console.log(`${launch.flightNumber} ${launch.mission}`);
