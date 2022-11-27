@@ -45,9 +45,9 @@ const saveLaunch = async (launch) => {
     keplerName: launch.target
   });
 
-  if (!planet) {
-    throw new Error("No matching planet found");
-  }
+  // if (!planet) {
+  //   throw new Error("No matching planet found");
+  // }
 
   await launchesDatabase.updateOne(
     {
@@ -62,11 +62,12 @@ saveLaunch(launch);
 
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
 
-const loadLaunchData = async () => {
+const populateLaunches = async () => {
   console.log("Downloading launch data...");
   const response = await axios.post(SPACEX_API_URL, {
     query: {},
     options: {
+      pagination: false,
       populate: [
         {
           path: "rocket",
@@ -84,23 +85,49 @@ const loadLaunchData = async () => {
     }
   });
 
+  if (response.status !== 200) {
+    console.log("Problem downloading launch data");
+    throw new Error("Launch data download failed");
+  }
+
   const launchDocs = response.data.docs;
   for (const launchDoc of launchDocs) {
     const payloads = launchDoc["payloads"];
-    const customer = payloads.flatMap((payload) => payload["customers"]);
+    const customers = payloads.flatMap((payload) => {
+      return payload["customers"];
+    });
 
     const launch = {
       flightNumber: launchDoc["flight_number"],
       mission: launchDoc["name"],
       rocket: launchDoc["rocket"]["name"],
-      laucnDate: launchDoc["date_local"],
-      customer,
+      launchDate: launchDoc["date_local"],
       upcoming: launchDoc["upcoming"],
-      success: launchDoc["success"]
+      success: launchDoc["success"],
+      customers
     };
 
     console.log(`${launch.flightNumber} ${launch.mission}`);
+
+    await saveLaunch(launch);
   }
+};
+
+const loadLaunchData = async () => {
+  const firstLaunch = await findLaunch({
+    flightNumber: 1,
+    rocket: "Falcon 1",
+    mission: "FalconSat"
+  });
+  if (firstLaunch) {
+    console.log("Launch data already loaded!");
+  } else {
+    await populateLaunches();
+  }
+};
+
+const findLaunch = (filter) => {
+  return launchesDatabase.findOne(filter);
 };
 
 const scheduleNewLaunch = async (launch) => {
@@ -142,5 +169,6 @@ module.exports = {
   getLatestFlightNumber,
   addNewLauch,
   abortLaunchById,
-  loadLaunchData
+  loadLaunchData,
+  scheduleNewLaunch
 };
