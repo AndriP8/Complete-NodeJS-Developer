@@ -53,6 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const checkLoggedIn = (req, res, next) => {
+  console.log("Current user is: ", req.user);
   const isLoggedIn = req.isAuthenticated() && req.user;
   if (!isLoggedIn) {
     return res.status(401).json({
@@ -82,7 +83,10 @@ app.get(
   }
 );
 
-app.get("/auth/logout", (req, res) => {});
+app.get("/auth/logout", (req, res) => {
+  req.logout();
+  return res.redirect("/");
+});
 
 app.get("/failure", (req, res) => {
   return res.send("Failed to log in!");
