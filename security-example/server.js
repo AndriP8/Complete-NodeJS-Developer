@@ -32,11 +32,11 @@ const verifyCallback = (accessToken, refreshToken, profile, done) => {
 passport.use(new Strategy(AUTH_OPTIONS, verifyCallback));
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user.id);
 });
 
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
+passport.deserializeUser((id, done) => {
+  done(null, id);
 });
 
 const app = express();
@@ -53,7 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const checkLoggedIn = (req, res, next) => {
-  const isLoggedIn = true;
+  const isLoggedIn = req.isAuthenticated() && req.user;
   if (!isLoggedIn) {
     return res.status(401).json({
       error: "You must log in"
@@ -88,11 +88,11 @@ app.get("/failure", (req, res) => {
   return res.send("Failed to log in!");
 });
 
-app.get("/", checkLoggedIn, (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.get("/secret", (req, res) => {
+app.get("/secret", checkLoggedIn, (req, res) => {
   res.send("personal secret");
 });
 
