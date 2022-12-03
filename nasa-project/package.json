@@ -16,13 +16,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^0.21.1",
-    "dotenv": "^16.0.3",
-    "mongoose": "^6.7.3",
-    "morgan": "^1.10.0",
-    "pm2": "^5.2.2",
-    "server": "^1.0.37"
-  }
+  "license": "ISC"
 }
