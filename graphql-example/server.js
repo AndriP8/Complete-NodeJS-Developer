@@ -9,7 +9,18 @@ const typesArray = loadFilesSync("*/*", {
 });
 
 const schema = makeExecutableSchema({
-  typeDefs: typesArray
+  typeDefs: typesArray,
+  resolvers: {
+    Query: {
+      products: async (parent) => {
+        const product = await Promise.resolve(parent.products);
+        return product;
+      },
+      orders: (parent) => {
+        return parent.orders;
+      }
+    }
+  }
 });
 
 const root = {
