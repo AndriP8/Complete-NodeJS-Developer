@@ -3,21 +3,13 @@ const productsModel = require("./products.model");
 module.exports = {
   Query: {
     products: () => {
-      return [
-        {
-          id: "redshoe",
-          description: "Red Shoe",
-          price: 43.3
-        },
-        {
-          id: "bluejeans",
-          description: "Blue Jeans",
-          price: 40.3
-        }
-      ];
+      return productsModel.getAllProducts();
     },
     productsByPrice: (_, args) => {
       return productsModel.getProductsByPrice(args.min, args.max);
+    },
+    product: (_, args) => {
+      return productsModel.getProductById(args.id);
     }
   }
 };

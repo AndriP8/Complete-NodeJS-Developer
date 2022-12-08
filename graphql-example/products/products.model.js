@@ -7,7 +7,13 @@ const products = [
   {
     id: "bluejeans",
     description: "Blue Jeans",
-    price: 40.3
+    price: 40.3,
+    reviews: [
+      {
+        rating: 9,
+        comment: "great product"
+      }
+    ]
   }
 ];
 
@@ -21,7 +27,12 @@ const getProductsByPrice = (min, max) => {
   });
 };
 
+const getProductById = (id) => {
+  return products.find((product) => product.id === id);
+};
+
 module.exports = {
   getAllProducts,
-  getProductsByPrice
+  getProductsByPrice,
+  getProductById
 };
